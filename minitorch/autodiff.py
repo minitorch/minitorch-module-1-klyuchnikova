@@ -1,7 +1,8 @@
 from dataclasses import dataclass
-from typing import Any, Iterable, List, Tuple
+from typing import Any, Iterable, List, Tuple, Dict
 
 from typing_extensions import Protocol
+from collections import deque, defaultdict
 
 # ## Task 1.1
 # Central Difference calculation
@@ -22,9 +23,9 @@ def central_difference(f: Any, *vals: Any, arg: int = 0, epsilon: float = 1e-6) 
     Returns:
         An approximation of $f'_i(x_0, \ldots, x_{n-1})$
     """
-    if arg < 0 or arg > len(vals) - 1:
+    if arg < 0 or arg >= len(vals):
         raise ValueError("Arg out of range")
-    
+
     v_2 = list(vals)
     v_1 = list(vals)
     v_2[arg] += epsilon
@@ -68,8 +69,25 @@ def topological_sort(variable: Variable) -> Iterable[Variable]:
     Returns:
         Non-constant Variables in topological order starting from the right.
     """
-    # TODO: Implement for Task 1.4.
-    raise NotImplementedError("Need to implement for Task 1.4")
+    
+    visited = set()
+    ordered_vars = []
+
+    def dfs(v: Variable):
+        if v.unique_id in visited:
+            return
+        visited.add(v.unique_id)
+
+        if v.is_constant():
+            return
+
+        for parent in v.parents:
+            dfs(parent)
+
+        ordered_vars.append(v)
+
+    dfs(variable)
+    return ordered_vars
 
 
 def backpropagate(variable: Variable, deriv: Any) -> None:
@@ -83,8 +101,20 @@ def backpropagate(variable: Variable, deriv: Any) -> None:
 
     No return. Should write to its results to the derivative values of each leaf through `accumulate_derivative`.
     """
-    # TODO: Implement for Task 1.4.
-    raise NotImplementedError("Need to implement for Task 1.4")
+    d = defaultdict(float)
+    if deriv is not None:
+        d[variable.unique_id] = deriv
+
+    for var in reversed(topological_sort(variable)):
+        d_output = d[var.unique_id]
+
+        if var.is_leaf():
+            var.accumulate_derivative(d_output)
+        else:
+            for parent_var, parent_deriv in var.chain_rule(d_output):
+                if parent_var.is_constant():
+                    continue
+                d[parent_var.unique_id] += parent_deriv
 
 
 @dataclass

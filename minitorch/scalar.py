@@ -117,6 +117,9 @@ class Scalar:
 
     def __rmul__(self, b: ScalarLike) -> Scalar:
         return self * b
+    
+    def __hash__(self) -> int:
+        return hash(self.unique_id)
 
     def log(self) -> Scalar:
         return Log.apply(self)
