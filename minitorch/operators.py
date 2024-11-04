@@ -3,7 +3,7 @@
 import math
 
 # ## Task 0.1
-from typing import Callable, Iterable, TypeVar
+from typing import Callable, Iterable, TypeVar, Union
 
 #
 # Implementation of a prelude of elementary functions.
@@ -90,9 +90,10 @@ def inv_back(x: float, d: float) -> float:
     return -d / (x**2)
 
 
-def relu_back(x: float, d: float) -> float:
+def relu_back(x: Union[float, bool], d: float) -> float:
     """Computes the derivative of ReLU times a second arg."""
-    return d if x > 0 else 0.0
+    x = x if isinstance(x, bool) else x > 0
+    return d if x else 0.0
 
 
 # ## Task 0.3
