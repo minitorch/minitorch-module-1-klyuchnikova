@@ -72,17 +72,17 @@ def log(x: float) -> float:
 
 def exp(x: float) -> float:
     """Calculates the exponential function."""
-    return math.exp(x)
+    return math.exp(x + 1e-9)
 
 
 def inv(x: float) -> float:
     """Calculates the reciprocal."""
-    return 1.0 / x
+    return 1.0 / (x + 1e-9)
 
 
 def log_back(x: float, d: float) -> float:
     """Computes the derivative of log times a second arg."""
-    return d / x
+    return d / (x + 1e-9)
 
 
 def inv_back(x: float, d: float) -> float:
